@@ -39,11 +39,6 @@ resource "aws_security_group" "instance-sg" {
     }
 }
 
-variable "server_port" {
-    description = "The port the server will use for HTTP requests"
-    default = 8080
-}
-
 data "aws_availability_zones" "new" {
   filter {
     name   = "opt-in-status"
@@ -69,6 +64,7 @@ resource "aws_elb" "my_first_elb" {
 
   name = "my-first-terraform-asg"
   availability_zones = data.aws_availability_zones.new.names
+  security_groups = aws_security_group.elb.id
 
   listener {
     lb_port = 80
@@ -76,5 +72,33 @@ resource "aws_elb" "my_first_elb" {
     instance_port = var.server_port
     instance_protocol = "http"
   }
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 3
+    interval = 30
+    target = "HTTP:var.server_port/"
+  }
   
 }
+
+resource "aws_security_group" "elb" {
+  name = "terraform-asg-elb"
+
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0 
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+}
+
