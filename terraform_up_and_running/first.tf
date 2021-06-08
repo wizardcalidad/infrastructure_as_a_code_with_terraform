@@ -1,7 +1,8 @@
 provider "aws" {
-    region = "us-east-1"
-    access_key = "AKIATIZLLRH7RSUM5PGE"
-    secret_key = "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"
+    region = var.region
+    profile = var.profile
+    access_key = var.aws_access_key
+    secret_key = var.aws_secret_key
 }
 
 resource "aws_launch_configuration" "first" {
@@ -62,5 +63,18 @@ resource "aws_autoscaling_group" "first-ag" {
       value = "my-first-terraform-asg"
       propagate_at_launch = true
     }
+}
+
+resource "aws_elb" "my_first_elb" {
+
+  name = "my-first-terraform-asg"
+  availability_zones = data.aws_availability_zones.new.names
+
+  listener {
+    lb_port = 80
+    lb_protocol = "http"
+    instance_port = var.server_port
+    instance_protocol = "http"
+  }
   
 }
