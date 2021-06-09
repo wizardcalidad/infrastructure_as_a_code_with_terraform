@@ -25,5 +25,6 @@ Please see [LICENSE.txt](/LICENSE.txt) for details on how the code in this repo 
 ## References
 
 [gruntwork.io](...)
+
 [Terraform Registry](...)
 
