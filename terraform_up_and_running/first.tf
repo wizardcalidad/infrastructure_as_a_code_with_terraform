@@ -1,8 +1,5 @@
 provider "aws" {
     region = var.region
-    profile = var.profile
-    # access_key = var.aws_access_key
-    # secret_key = var.aws_secret_key
 }
 
 resource "aws_launch_configuration" "first" {
@@ -64,7 +61,7 @@ resource "aws_elb" "my_first_elb" {
 
   name = "my-first-terraform-asg"
   availability_zones = data.aws_availability_zones.new.names
-  security_groups = aws_security_group.elb.id
+  security_groups = [aws_security_group.elb.id]
 
   listener {
     lb_port = 80
@@ -78,7 +75,7 @@ resource "aws_elb" "my_first_elb" {
     unhealthy_threshold = 2
     timeout = 3
     interval = 30
-    target = "HTTP:var.server_port/"
+    target = "HTTP:${var.server_port}/"
   }
   
 }
