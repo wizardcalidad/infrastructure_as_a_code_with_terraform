@@ -45,7 +45,10 @@ data "aws_availability_zones" "new" {
 
 resource "aws_autoscaling_group" "first-ag" {
     launch_configuration = aws_launch_configuration.first.id
-    availability_zones = data.aws_availability_zones.new.names
+    availability_zones = ["us-east-1a"]
+
+    load_balancers = [aws_elb.my_first_elb.name]
+    health_check_type = "ELB"
 
     min_size = 2
     max_size = 10
@@ -60,7 +63,7 @@ resource "aws_autoscaling_group" "first-ag" {
 resource "aws_elb" "my_first_elb" {
 
   name = "my-first-terraform-asg"
-  availability_zones = data.aws_availability_zones.new.names
+  availability_zones = ["us-east-1a"]
   security_groups = [aws_security_group.elb.id]
 
   listener {
@@ -78,6 +81,10 @@ resource "aws_elb" "my_first_elb" {
     target = "HTTP:${var.server_port}/"
   }
   
+}
+
+output "elb_dns_name" {
+value = aws_elb.my_first_elb.dns_name
 }
 
 resource "aws_security_group" "elb" {
