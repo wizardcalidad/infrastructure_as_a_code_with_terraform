@@ -1,8 +1,5 @@
 provider "aws" {
     region = var.region
-    profile = var.profile
-    access_key = var.aws_access_key
-    secret_key = var.aws_secret_key
 }
 
 resource "aws_launch_configuration" "first" {
@@ -39,11 +36,6 @@ resource "aws_security_group" "instance-sg" {
     }
 }
 
-variable "server_port" {
-    description = "The port the server will use for HTTP requests"
-    default = 8080
-}
-
 data "aws_availability_zones" "new" {
   filter {
     name   = "opt-in-status"
@@ -53,7 +45,10 @@ data "aws_availability_zones" "new" {
 
 resource "aws_autoscaling_group" "first-ag" {
     launch_configuration = aws_launch_configuration.first.id
-    availability_zones = data.aws_availability_zones.new.names
+    availability_zones = ["us-east-1a"]
+
+    load_balancers = [aws_elb.my_first_elb.name]
+    health_check_type = "ELB"
 
     min_size = 2
     max_size = 10
@@ -68,7 +63,8 @@ resource "aws_autoscaling_group" "first-ag" {
 resource "aws_elb" "my_first_elb" {
 
   name = "my-first-terraform-asg"
-  availability_zones = data.aws_availability_zones.new.names
+  availability_zones = ["us-east-1a"]
+  security_groups = [aws_security_group.elb.id]
 
   listener {
     lb_port = 80
@@ -76,5 +72,37 @@ resource "aws_elb" "my_first_elb" {
     instance_port = var.server_port
     instance_protocol = "http"
   }
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 3
+    interval = 30
+    target = "HTTP:${var.server_port}/"
+  }
   
 }
+
+output "elb_dns_name" {
+value = aws_elb.my_first_elb.dns_name
+}
+
+resource "aws_security_group" "elb" {
+  name = "terraform-asg-elb"
+
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0 
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+}
+
