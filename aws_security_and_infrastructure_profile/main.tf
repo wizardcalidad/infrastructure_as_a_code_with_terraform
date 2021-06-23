@@ -114,19 +114,21 @@ resource "aws_iam_group_membership" "peering-members" {
 
 # Create a group policy that can assume the role in sec
 
-resource "aws_iam_group_policy" "peering-policy" {
-    name = "peering-policy"
+resource "aws_iam_group_policy" "peering-group-policy" {
+    name = "peering-group-policy"
     group = aws_iam_group.peering.id
     provider = aws.infra
 
     policy = jsonencode(
     {
         "Version": "2012-10-17",
-        "Statement": {
+        "Statement": [
+            {
             "Effect": "Allow",
             "Action": "sts:AssumeRole",
             "Resource": "${aws_iam_role.peer_role.arn}"
-        }
+        },
+        ]
     })
     
 
