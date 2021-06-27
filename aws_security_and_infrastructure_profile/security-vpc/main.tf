@@ -32,7 +32,7 @@ variable "intra_subnets" {
 #########################################################################################
 
 provider "aws" {
-  version = "~ 2.0"
+  version = "~> 3.15"
   region = var.region
   profile = "sec"
 }
@@ -51,5 +51,30 @@ data "aws_availability_zones" "azs" {}
 
 module "vpc" {
     source = "terraform-aws-modules/vpc/aws"
-    version = "value"
+    version = "3.1.0"
+
+    name = "sec-vpc"
+    cidr = var.vpc_cidr_range
+
+    azs = slice(data.aws_availability_zones.azs.names, 0, 2)
+    public_subnets = var.public_subnets
+    private_subnets = var.private_subnets
+    intra_subnets = var.intra_subnets
+
+    tags = {
+      Environments = "all"
+      Team = "security"
+    }
+}
+
+#########################################################################################
+# OUTPUTS
+#########################################################################################
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+
+output "aws_version_id" {
+  value = aws.aws_version_id
 }
