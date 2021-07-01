@@ -75,6 +75,3 @@ output "vpc_id" {
   value = module.vpc.vpc_id
 }
 
-output "aws_version_id" {
-  value = aws.aws_version_id
-}
