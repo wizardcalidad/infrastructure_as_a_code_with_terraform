@@ -145,3 +145,18 @@ resource "aws_iam_group_policy" "read_only" {
     EOF
   
 }
+
+# terraform plan -out state.tfplan
+# terraform apply state.tfplan
+
+# for multiple environment, it's best to locate the s3 bucket and the dynamodb in the admin account, all admin users 
+# will also be in the admin account, they write into other accounts by assuming roles.
+# 
+#
+#
+#
+#
+#
+#
+#
+#
