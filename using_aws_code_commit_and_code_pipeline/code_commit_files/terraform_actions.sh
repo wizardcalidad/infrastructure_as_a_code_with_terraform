@@ -22,3 +22,10 @@ then
     terraform plan -out vpc.tfplan > tf_output.txt
     aws s3 cp s3://$TF_BUCKET/plans/$WORKSPACE_NAME-vpc.tfplan vpc.tfplan
     terraform apply vpc.tfplan > tf_output.txt
+fi
+
+if [ $TF_ACTION = "DESTROY"]
+then
+    echo "Running destroy"
+    terraform destroy -auto-approve > tf_output.txt
+fi
