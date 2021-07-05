@@ -43,7 +43,7 @@ module "vpc" {
     name = "${terraform.workspace}-vpc"
     cidr = var.vpc_cidr_range
     
-    azs  = slice{data.aws_availability_zones.azs.names, 0, 1}
+    #azs  = slice{data.aws_availability_zones.azs.names, 0, 1}
     public_subnets = var.public_subnets
 
     tags = {
