@@ -1,0 +1,22 @@
+version: 0.2
+
+env:
+  variables:
+    TF_INPUT: "0"
+    TF_IN_AUTOMATION: "YES"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - cd /usr/bin
+      - curl -s -ql -o terraform.zip https://release.hashicorp.com/terraform/${}
+      - unzip terraform.zip
+      - cd "$CODEBUILD_SRC_DIR"
+      - chmod a+x *.sh
+      - cp ./terraform_actions.sh /usr/bin
+
+  build:
+    commands:
+      
