@@ -20,3 +20,5 @@ if [ $TF_ACTION = "PLAN"]
 then
     echo "Running plan"
     terraform plan -out vpc.tfplan > tf_output.txt
+    aws s3 cp s3://$TF_BUCKET/plans/$WORKSPACE_NAME-vpc.tfplan vpc.tfplan
+    terraform apply vpc.tfplan > tf_output.txt
